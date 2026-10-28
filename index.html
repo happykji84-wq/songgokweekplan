@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송곡초등학교 주간 교육계획</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* 토스트 알림 애니메이션 */
+        .toast-enter { transform: translateY(100%); opacity: 0; }
+        .toast-enter-active { transform: translateY(0); opacity: 1; transition: all 0.3s ease-out; }
+        
+        /* 드래그 앤 드롭 스타일 */
+        .drag-over { background-color: rgba(13, 148, 136, 0.1) !important; border: 2px dashed #0d9488 !important; }
+        .dragging { opacity: 0.4; }
+
+        /* 인쇄용 스타일 설정 (A4 가로 방향 최적화) */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 3mm;
+            }
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                font-size: 9px !important;
+            }
+            #header-bg { 
+                background: none !important; 
+                color: black !important; 
+                box-shadow: none !important; 
+                border-bottom: 2px solid #222; 
+                border-radius: 0; 
+                padding: 0.15rem 0; 
+                margin-bottom: 0.15rem; 
+            }
+            #header-bg svg, #header-controls, #toast-container { display: none !important; }
+            .print-text-black { color: black !important; }
+            .delete-btn { display: none !important; }
+            .drag-handle { display: none !important; }
+            .add-btn { display: none !important; }
+            .max-w-full { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            
+            .border-gray-300 { border-color: #666 !important; }
+            .bg-gray-50, .bg-red-50\/40, .bg-orange-50\/40, .bg-yellow-50\/40, .bg-green-50\/40, .bg-blue-50\/40, .bg-indigo-50\/40, .bg-pink-50\/40 { 
+                background-color: #f9fafb !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .overflow-x-auto { overflow: visible !important; }
+            .min-w-[1000px] { min-width: 100% !important; }
+            
+            .print-scale-container {
+                font-size: 9px !important;
+                line-height: 1.15 !important;
+            }
+            .min-h-[75px] {
+                min-height: 65px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+
+    <!-- 가로 여백을 최소화하여 화면 전체 활용 (px-1 ~ px-2) -->
+    <div class="max-w-full mx-auto px-1 py-1 sm:px-2 flex flex-col gap-1 w-full print-scale-container">
+        
+        <!-- 헤더 영역 -->
+        <header id="header-bg" class="bg-gradient-to-r from-teal-600 to-green-700 text-white rounded-lg shadow-sm px-3 py-1.5 sm:px-4 flex flex-col sm:flex-row justify-between items-center gap-1.5">
+            <div class="flex items-center gap-2">
+                <div class="bg-white/20 p-1 rounded-md backdrop-blur-sm shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xs sm:text-sm font-bold tracking-tight print-text-black">송곡초등학교</h1>
+                    <div class="flex flex-col mt-0">
+                        <p class="text-green-100 text-[10px] font-medium print-text-black">교직원 주간 교육계획 (일정 드래그 이동, 더블클릭 수정)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 주차 이동 컨트롤 및 공유 버튼 -->
+            <div id="header-controls" class="flex flex-wrap items-center justify-end gap-1">
+                <div class="flex items-center bg-black/15 backdrop-blur-sm rounded-md p-0.5 shadow-inner shrink-0">
+                    <button id="btn-prev" class="p-1 hover:bg-white/20 rounded transition-colors text-white" title="이전 주">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <div id="week-range" class="px-2 font-semibold text-[11px] min-w-[145px] text-center tracking-tight whitespace-nowrap">
+                        로딩 중...
+                    </div>
+                    <button id="btn-next" class="p-1 hover:bg-white/20 rounded transition-colors text-white" title="다음 주">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    <div class="w-px h-3 bg-white/30 mx-1"></div>
+                    <button id="btn-today" class="ml-0.5 text-[10px] font-medium bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded transition-colors text-white shadow-sm whitespace-nowrap">
+                        오늘
+                    </button>
+                    <button id="btn-print" type="button" class="ml-1 text-[10px] font-medium bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded transition-colors text-white shadow-sm flex items-center gap-1 whitespace-nowrap cursor-pointer" title="주간 계획 인쇄">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        인쇄
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 주간 캘린더 그리드 (한 화면에 모두 보이도록 컴팩트한 높이 설정) -->
+        <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-300 text-[11px] flex flex-col">
+            <div class="min-w-[950px] flex flex-col">
+                <!-- Header -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 bg-gray-50">
+                    <div class="p-1 flex items-center justify-center font-bold text-gray-700 border-r border-gray-300 text-[11px]">구분 / 요일</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-0">월</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-1">화</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-2">수</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-3">목</div>
+                    <div class="p-1 text-center font-bold text-teal-800 text-[11px]" id="header-day-4">금</div>
+                </div>
+                
+                <!-- Row 0: 직원동정 -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-red-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">직원동정</div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 0)"><button onclick="window.openAddModal(0, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 1)"><button onclick="window.openAddModal(0, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 2)"><button onclick="window.openAddModal(0, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 3)"><button onclick="window.openAddModal(0, 3)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-3" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 4)"><button onclick="window.openAddModal(0, 4)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-4" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                </div>
+
+                <!-- Row 1: 교육과정운영부 -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-orange-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">교육과정<br>운영부</div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 0)"><button onclick="window.openAddModal(1, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 1)"><button onclick="window.openAddModal(1, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 2)"><button onclick="window.openAddModal(1, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 3)"><button onclick="window.openAddModal(1, 3)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-3" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 4)"><button onclick="window.openAddModal(1, 4)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-4" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                </div>
+
+                <!-- Row 2: 창의인재·연구부 -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-yellow-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">창의인재<br>·연구부</div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 0)"><button onclick="window.openAddModal(2, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 1)"><button onclick="window.openAddModal(2, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 2)"><button onclick="window.openAddModal(2, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 3)"><button onclick="window.openAddModal(2, 3)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-3" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 4)"><button onclick="window.openAddModal(2, 4)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-4" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                </div>
+
+                <!-- Row 3: 생활안전부 -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-green-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">생활안전부</div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 0)"><button onclick="window.openAddModal(3, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 1)"><button onclick="window.openAddModal(3, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 2)"><button onclick="window.openAddModal(3, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 3)"><button onclick="window.openAddModal(3, 3)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-3" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 4)"><button onclick="window.openAddModal(3, 4)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-4" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                </div>
+
+                <!-- Row 4: 진로탐구부 -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-blue-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">진로탐구부</div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 0)"><button onclick="window.openAddModal(4, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 1)"><button onclick="window.openAddModal(4, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 2)"><button onclick="window.openAddModal(4, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 3)"><button onclick="window.openAddModal(4, 3)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-3" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 4)"><button onclick="window.openAddModal(4, 4)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-4" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                </div>
+
+                <!-- Row 5: 행정실/급식실 -->
+                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-indigo-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">행정실/<br>급식실</div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 0)"><button onclick="window.openAddModal(5, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 1)"><button onclick="window.openAddModal(5, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 2)"><button onclick="window.openAddModal(5, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 3)"><button onclick="window.openAddModal(5, 3)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-3" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                    <div class="p-0.5 min-h-[75px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 4)"><button onclick="window.openAddModal(5, 4)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-4" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
+                </div>
+
+                <!-- Row 6: 기타 전달사항 -->
+                <div class="grid grid-cols-[110px_1fr] group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-pink-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">기타<br>전달사항</div>
+                    <div class="p-0.5 min-h-[60px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 6, 5)"><button onclick="window.openAddModal(6, 5)" class="add-btn absolute top-0.5 right-1 text-gray-400 hover:text-teal-600 hover:bg-teal-50 px-1.5 py-0.5 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center gap-1 text-[10px] font-medium z-10" title="일정 추가">+</button><div id="list-etc" class="flex-1 flex flex-col gap-0.5 pr-12"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 일정 추가/수정 모달 -->
+    <div id="add-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center transition-opacity">
+        <div class="bg-white rounded-xl shadow-xl p-5 w-full max-w-md mx-4 transform scale-95 opacity-0 transition-all duration-200" id="add-modal-content">
+            <div class="flex items-center justify-between mb-2">
+                <h3 id="modal-title" class="text-base font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    일정 추가
+                </h3>
+            </div>
+            <!-- 요청하신 예시 문구 -->
+            <p class="text-[11px] text-gray-400 mb-2 ml-6">예: *홍길동(oo연수/14:30/아산교육지원청)</p>
+            
+            <textarea id="modal-input" class="w-full h-24 p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none resize-none mb-4 text-xs" placeholder="내용을 입력하세요..." onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); window.saveModalPlan(); }"></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="window.closeAddModal()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium text-xs">취소</button>
+                <button id="modal-save-btn" onclick="window.saveModalPlan()" class="px-4 py-1.5 bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition-colors font-semibold shadow-sm text-xs">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 알림 컨테이너 -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'songgok-planner';
+        const isMock = typeof __firebase_config === 'undefined';
+        
+        let app, auth, db;
+        let currentUser = null;
+        let unsubscribe = null;
+        let currentPlans = [];
+        let currentWeekMonday = getMonday(new Date());
+
+        let editingPlanId = null;
+
+        const academic2026Events = {
+            '2026-03-01': { text: '*삼일절(공휴일)', type: 'holiday' },
+            '2026-03-02': { text: '*대체공휴일', type: 'holiday' },
+            '2026-03-03': { text: '*1학기 시작일(시업식, 입학식)', type: 'event' },
+            '2026-05-01': { text: '*노동절', type: 'holiday' },
+            '2026-05-04': { text: '*재량휴업일', type: 'holiday' },
+            '2026-05-05': { text: '*어린이날', type: 'holiday' },
+            '2026-05-24': { text: '*부처님오신날', type: 'holiday' },
+            '2026-05-25': { text: '*대체공휴일', type: 'holiday' },
+            '2026-06-03': { text: '*전국동시지방선거일', type: 'holiday' },
+            '2026-06-06': { text: '*현충일', type: 'holiday' },
+            '2026-07-17': { text: '*제헌절', type: 'holiday' },
+            '2026-08-15': { text: '*광복절', type: 'holiday' },
+            '2026-08-17': { text: '*대체공휴일', type: 'holiday' },
+            '2026-08-20': { text: '*2학기 시작일', type: 'event' },
+            '2026-09-23': { text: '*재량휴업일', type: 'holiday' },
+            '2026-09-24': { text: '*추석연휴', type: 'holiday' },
+            '2026-09-25': { text: '*추석연휴', type: 'holiday' },
+            '2026-09-26': { text: '*추석연휴', type: 'holiday' },
+            '2026-10-03': { text: '*개천절', type: 'holiday' },
+            '2026-10-05': { text: '*대체공휴일', type: 'holiday' },
+            '2026-10-09': { text: '*한글날', type: 'holiday' },
+            '2026-12-25': { text: '*성탄절', type: 'holiday' },
+            '2027-01-01': { text: '*신정', type: 'holiday' },
+            '2027-01-05': { text: '*종업일, 졸업일', type: 'event' },
+            '2027-02-06': { text: '*설연휴', type: 'holiday' },
+            '2027-02-07': { text: '*설연휴', type: 'holiday' },
+            '2027-02-08': { text: '*설연휴', type: 'holiday' },
+            '2027-02-09': { text: '*대체공휴일', type: 'holiday' }
+        };
+
+        function getAcademicEvent(dateStr, dateObj) {
+            if (academic2026Events[dateStr]) {
+                return academic2026Events[dateStr];
+            }
+            const time = dateObj.getTime();
+            const summerStart = new Date('2026-07-25T00:00:00').getTime();
+            const summerEnd = new Date('2026-08-19T23:59:59').getTime();
+            if (time >= summerStart && time <= summerEnd) {
+                return { text: '*여름방학', type: 'vacation' };
+            }
+            const winterStart = new Date('2027-01-06T00:00:00').getTime();
+            const winterEnd = new Date('2027-02-28T23:59:59').getTime();
+            if (time >= winterStart && time <= winterEnd) {
+                return { text: '*학년말 방학', type: 'vacation' };
+            }
+            return null;
+        }
+
+        const mockStorage = {
+            [getWeekId(getMonday(new Date()))]: [
+                { id: '1', dayIndex: 0, categoryIndex: 0, content: '*학교장(아산1지구 교장단 협의회, 오후, 산동초)', createdAt: new Date().toISOString() },
+                { id: '2', dayIndex: 1, categoryIndex: 1, content: '*학교업무최적화 비대면연수(14:40, 마주온)', createdAt: new Date().toISOString() }
+            ]
+        };
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if(!container) return;
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-red-600' : 'bg-gray-800';
+            toast.className = `${bgColor} text-white px-4 py-2 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-4 font-medium text-xs`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-4');
+            });
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function getMonday(d) {
+            const date = new Date(d);
+            date.setHours(0, 0, 0, 0);
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(date.setDate(diff));
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function getWeekId(mondayDate) {
+            const y = mondayDate.getFullYear();
+            const m = String(mondayDate.getMonth() + 1).padStart(2, '0');
+            const d = String(mondayDate.getDate()).padStart(2, '0');
+            return `week-${y}-${m}-${d}`;
+        }
+
+        function formatDateKey(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function updateHeaders(monday) {
+            const friday = addDays(monday, 4);
+            const m_month = monday.getMonth() + 1;
+            const m_date = monday.getDate();
+            const f_month = friday.getMonth() + 1;
+            const f_date = friday.getDate();
+            
+            document.getElementById('week-range').textContent = 
+                `${monday.getFullYear()}. ${m_month}. ${m_date}. ~ ${f_month}. ${f_date}.`;
+
+            const weekDays = ['월', '화', '수', '목', '금'];
+            for (let i = 0; i < 5; i++) {
+                const d = addDays(monday, i);
+                const isToday = new Date().toDateString() === d.toDateString();
+                const headerEl = document.getElementById(`header-day-${i}`);
+                headerEl.textContent = `${d.getMonth() + 1}. ${d.getDate()} (${weekDays[i]})`;
+                
+                if(isToday) {
+                    headerEl.classList.add('bg-teal-600', 'text-white');
+                    headerEl.classList.remove('bg-teal-50/50', 'text-teal-800');
+                } else {
+                    headerEl.classList.remove('bg-teal-600', 'text-white');
+                    headerEl.classList.add('bg-teal-50/50', 'text-teal-800');
+                }
+            }
+        }
+
+        function renderPlans() {
+            for (let c = 0; c < 6; c++) {
+                for (let d = 0; d < 5; d++) {
+                    const el = document.getElementById(`list-${c}-${d}`);
+                    if(el) {
+                        el.innerHTML = '';
+                        const cellWrapper = el.closest('.group\\/cell') || el.parentElement;
+                        cellWrapper.classList.remove('bg-gray-100', 'text-gray-400');
+                    }
+                }
+            }
+            const etcEl = document.getElementById('list-etc');
+            if(etcEl) etcEl.innerHTML = '';
+            
+            for (let d = 0; d < 5; d++) {
+                const dayDate = addDays(currentWeekMonday, d);
+                const dateKey = formatDateKey(dayDate);
+                const eventInfo = getAcademicEvent(dateKey, dayDate);
+                
+                if (eventInfo && (eventInfo.type === 'holiday' || eventInfo.type === 'vacation')) {
+                    for (let c = 0; c < 6; c++) {
+                        const container = document.getElementById(`list-${c}-${d}`);
+                        if (container) {
+                            const cellWrapper = container.closest('.group\\/cell');
+                            if (cellWrapper) {
+                                cellWrapper.classList.add('bg-gray-100');
+                            }
+                            if (c === 0) {
+                                const badge = document.createElement('div');
+                                badge.className = 'p-1 bg-gray-200 border border-gray-300 text-gray-700 rounded text-[10px] font-bold mb-0.5 flex items-center gap-1 shadow-sm';
+                                badge.innerHTML = `<span>📌</span><span>${escapeHtml(eventInfo.text)}</span>`;
+                                container.appendChild(badge);
+                            }
+                        }
+                    }
+                } else if (eventInfo && eventInfo.type === 'event') {
+                    const container = document.getElementById(`list-0-${d}`);
+                    if (container) {
+                        const badge = document.createElement('div');
+                        badge.className = 'p-0.5 bg-teal-50 border border-teal-200 text-teal-800 rounded text-[10px] font-semibold mb-0.5 flex items-center gap-1 shadow-sm';
+                        badge.innerHTML = `<span>📌</span><span>${escapeHtml(eventInfo.text)}</span>`;
+                        container.appendChild(badge);
+                    }
+                }
+            }
+
+            currentPlans.forEach(plan => {
+                let container = null;
+                if (plan.categoryIndex === 6) {
+                    container = document.getElementById('list-etc');
+                } else {
+                    container = document.getElementById(`list-${plan.categoryIndex}-${plan.dayIndex}`);
+                }
+                
+                if (!container) return;
+                
+                const el = document.createElement('div');
+                el.className = 'group/item relative p-1 bg-white/95 hover:bg-teal-50/90 border border-gray-200 rounded shadow-sm transition-all cursor-grab active:cursor-grabbing text-[11px] mb-0.5';
+                el.draggable = true;
+                el.id = `plan-${plan.id}`;
+                
+                el.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', plan.id);
+                    el.classList.add('dragging');
+                });
+                
+                el.addEventListener('dragend', () => {
+                    el.classList.remove('dragging');
+                });
+
+                el.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    window.openEditModal(plan);
+                });
+                
+                const contentHtml = escapeHtml(plan.content).replace(/\n/g, '<br>');
+                
+                el.innerHTML = `
+                    <div class="text-gray-800 break-words leading-tight pr-4" title="더블클릭하여 수정">
+                        ${contentHtml}
+                    </div>
+                    <div class="drag-handle absolute top-0.5 right-3 text-gray-300 hover:text-gray-500 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-pointer" title="드래그하여 이동">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                    </div>
+                    <button class="delete-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-opacity bg-white/90 rounded p-0.5 shadow-sm" onclick="window.deletePlan('${plan.id}')" aria-label="삭제">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        window.handleDragOver = function(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        };
+
+        window.handleDragLeave = function(e) {
+            e.currentTarget.classList.remove('drag-over');
+        };
+
+        window.handleDrop = async function(e, targetCategoryIndex, targetDayIndex) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const planId = e.dataTransfer.getData('text/plain');
+            if (!planId) return;
+            
+            const plan = currentPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            plan.categoryIndex = targetCategoryIndex;
+            plan.dayIndex = targetCategoryIndex === 6 ? 5 : targetDayIndex;
+            
+            const weekId = getWeekId(currentWeekMonday);
+            
+            if (isMock) {
+                mockStorage[weekId] = [...currentPlans];
+                renderPlans();
+                showToast("일정이 이동되었습니다.");
+                return;
+            }
+            
+            if (!currentUser) return showToast("권한이 없습니다.", "error");
+            
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'weekly_plans', weekId);
+            try {
+                renderPlans();
+                await setDoc(docRef, { plans: currentPlans }, { merge: true });
+                showToast("일정이 이동되었습니다.");
+            } catch(e) {
+                showToast("이동 실패: " + e.message, "error");
+                loadWeek(currentWeekMonday);
+            }
+        };
+
+        function loadWeek(mondayDate) {
+            updateHeaders(mondayDate);
+            
+            for(let c=0; c<6; c++) {
+                for(let d=0; d<5; d++) {
+                    const el = document.getElementById(`list-${c}-${d}`);
+                    if(el) el.innerHTML = '';
+                }
+            }
+            if(document.getElementById('list-etc')) document.getElementById('list-etc').innerHTML = '<div class="text-gray-400 text-xs p-1">로딩 중...</div>';
+
+            if (isMock) {
+                currentPlans = mockStorage[getWeekId(mondayDate)] || [];
+                setTimeout(renderPlans, 100);
+                return;
+            }
+
+            if (unsubscribe) unsubscribe();
+
+            const weekId = getWeekId(mondayDate);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'weekly_plans', weekId);
+            
+            unsubscribe = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    currentPlans = docSnap.data().plans || [];
+                } else {
+                    currentPlans = [];
+                }
+                renderPlans();
+            }, (error) => {
+                console.error("Firestore fetch error:", error);
+                showToast("데이터를 불러오지 못했습니다.", "error");
+            });
+        }
+
+        window.deletePlan = async function(planId) {
+            const weekId = getWeekId(currentWeekMonday);
+            const newPlans = currentPlans.filter(p => p.id !== planId);
+            
+            if (isMock) {
+                mockStorage[weekId] = newPlans;
+                currentPlans = newPlans;
+                renderPlans();
+                showToast("일정이 삭제되었습니다.");
+                return;
+            }
+
+            if (!currentUser) return showToast("권한이 없습니다.", "error");
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'weekly_plans', weekId);
+            try {
+                currentPlans = newPlans;
+                renderPlans();
+                await setDoc(docRef, { plans: newPlans }, { merge: true });
+                showToast("일정이 삭제되었습니다.");
+            } catch(e) {
+                showToast("삭제 실패: " + e.message, "error");
+                loadWeek(currentWeekMonday);
+            }
+        };
+
+        let modalCategory = 0;
+        let modalDay = 0;
+
+        window.openAddModal = function(catIndex, dayIndex) {
+            editingPlanId = null;
+            modalCategory = catIndex;
+            modalDay = dayIndex;
+            
+            document.getElementById('modal-title').innerHTML = `
+                <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                일정 추가
+            `;
+            
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            const input = document.getElementById('modal-input');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+            
+            input.value = '';
+            input.focus();
+        };
+
+        window.openEditModal = function(plan) {
+            editingPlanId = plan.id;
+            
+            document.getElementById('modal-title').innerHTML = `
+                <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                일정 수정
+            `;
+            
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            const input = document.getElementById('modal-input');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+            
+            input.value = plan.content;
+            input.focus();
+        };
+
+        window.closeAddModal = function() {
+            editingPlanId = null;
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        };
+
+        window.saveModalPlan = async function() {
+            const input = document.getElementById('modal-input');
+            let content = input.value.trim();
+            
+            if (!content) return showToast("일정 내용을 입력해주세요.", "error");
+            
+            if (!content.startsWith('*')) {
+                content = '*' + content;
+            }
+            
+            const weekId = getWeekId(currentWeekMonday);
+            let newPlans = [];
+
+            if (editingPlanId) {
+                newPlans = currentPlans.map(p => {
+                    if (p.id === editingPlanId) {
+                        return { ...p, content };
+                    }
+                    return p;
+                });
+            } else {
+                const newPlan = {
+                    id: crypto.randomUUID(),
+                    dayIndex: modalCategory === 6 ? 5 : modalDay,
+                    categoryIndex: modalCategory,
+                    content,
+                    createdAt: new Date().toISOString()
+                };
+                newPlans = [...currentPlans, newPlan];
+            }
+            
+            if (isMock) {
+                mockStorage[weekId] = newPlans;
+                currentPlans = newPlans;
+                renderPlans();
+                window.closeAddModal();
+                showToast(editingPlanId ? "일정이 수정되었습니다." : "일정이 추가되었습니다.");
+                return;
+            }
+            
+            if (!currentUser) return showToast("서버에 연결되지 않았습니다.", "error");
+            
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'weekly_plans', weekId);
+            const btn = document.getElementById('modal-save-btn');
+            
+            try {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+                
+                await setDoc(docRef, { plans: newPlans }, { merge: true });
+                window.closeAddModal();
+                showToast(editingPlanId ? "일정이 수정되었습니다." : "일정이 등록되었습니다.");
+            } catch(e) {
+                showToast("저장 실패: " + e.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        };
+
+        async function init() {
+            if (!isMock) {
+                try {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    currentUser = auth.currentUser;
+                } catch (error) {
+                    console.error("Firebase init error:", error);
+                    showToast("시스템 연결에 문제가 있습니다. 읽기 전용으로 표시됩니다.", "error");
+                }
+            }
+            
+            document.getElementById('btn-prev').addEventListener('click', () => {
+                currentWeekMonday = addDays(currentWeekMonday, -7);
+                loadWeek(currentWeekMonday);
+            });
+            
+            document.getElementById('btn-next').addEventListener('click', () => {
+                currentWeekMonday = addDays(currentWeekMonday, 7);
+                loadWeek(currentWeekMonday);
+            });
+            
+            document.getElementById('btn-today').addEventListener('click', () => {
+                currentWeekMonday = getMonday(new Date());
+                loadWeek(currentWeekMonday);
+            });
+
+            document.getElementById('btn-print').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.print();
+            });
+
+            loadWeek(currentWeekMonday);
+        }
+
+        init();
+    </script>
+</body>
+</html>
