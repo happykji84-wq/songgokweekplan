@@ -165,18 +165,18 @@
         <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-300 text-[11px] flex flex-col">
             <div class="min-w-[950px] flex flex-col">
                 <!-- Header -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 bg-gray-50">
-                    <div class="p-1 flex items-center justify-center font-bold text-gray-700 border-r border-gray-300 text-[11px]">구분 / 요일</div>
-                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-0">월</div>
-                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-1">화</div>
-                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-2">수</div>
-                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[11px]" id="header-day-3">목</div>
-                    <div class="p-1 text-center font-bold text-teal-800 text-[11px]" id="header-day-4">금</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 bg-gray-50">
+                    <div class="p-1 flex items-center justify-center font-bold text-gray-700 border-r border-gray-300 text-[16px]">구분 / 요일</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[16px]" id="header-day-0">월</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[16px]" id="header-day-1">화</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[16px]" id="header-day-2">수</div>
+                    <div class="p-1 text-center font-bold text-teal-800 border-r border-gray-300 text-[16px]" id="header-day-3">목</div>
+                    <div class="p-1 text-center font-bold text-teal-800 text-[16px]" id="header-day-4">금</div>
                 </div>
                 
                 <!-- Row 0: 직원동정 -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-red-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">직원동정</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-red-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">직원동정</div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 0)"><button onclick="window.openAddModal(0, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 1)"><button onclick="window.openAddModal(0, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 0, 2)"><button onclick="window.openAddModal(0, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-0-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
@@ -185,8 +185,8 @@
                 </div>
 
                 <!-- Row 1: 교육과정운영부 -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-orange-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">교육과정<br>운영부</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-orange-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">교육과정<br>운영부</div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 0)"><button onclick="window.openAddModal(1, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 1)"><button onclick="window.openAddModal(1, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 1, 2)"><button onclick="window.openAddModal(1, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-1-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
@@ -195,8 +195,8 @@
                 </div>
 
                 <!-- Row 2: 창의인재·연구부 -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-yellow-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">창의인재<br>·연구부</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-yellow-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">창의인재<br>·연구부</div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 0)"><button onclick="window.openAddModal(2, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 1)"><button onclick="window.openAddModal(2, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 2, 2)"><button onclick="window.openAddModal(2, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-2-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
@@ -205,8 +205,8 @@
                 </div>
 
                 <!-- Row 3: 생활안전부 -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-green-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">생활안전부</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-green-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">생활안전부</div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 0)"><button onclick="window.openAddModal(3, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 1)"><button onclick="window.openAddModal(3, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 3, 2)"><button onclick="window.openAddModal(3, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-3-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
@@ -215,8 +215,8 @@
                 </div>
 
                 <!-- Row 4: 진로탐구부 -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-blue-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">진로탐구부</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-blue-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">진로탐구부</div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 0)"><button onclick="window.openAddModal(4, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 1)"><button onclick="window.openAddModal(4, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 4, 2)"><button onclick="window.openAddModal(4, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-4-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
@@ -225,8 +225,8 @@
                 </div>
 
                 <!-- Row 5: 행정실/급식실 -->
-                <div class="grid grid-cols-[110px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-indigo-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">행정실/<br>급식실</div>
+                <div class="grid grid-cols-[120px_repeat(5,1fr)] border-b border-gray-300 group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-indigo-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">행정실/<br>급식실</div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 0)"><button onclick="window.openAddModal(5, 0)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-0" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 1)"><button onclick="window.openAddModal(5, 1)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-1" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
                     <div class="p-0.5 min-h-[75px] border-r border-gray-300 relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 5, 2)"><button onclick="window.openAddModal(5, 2)" class="add-btn absolute top-0.5 right-0.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 w-4 h-4 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center justify-center text-[10px] font-bold z-10" title="일정 추가">+</button><div id="list-5-2" class="flex-1 flex flex-col gap-0.5 pr-4"></div></div>
@@ -235,8 +235,8 @@
                 </div>
 
                 <!-- Row 6: 기타 전달사항 -->
-                <div class="grid grid-cols-[110px_1fr] group/row hover:bg-gray-50/30 transition-colors">
-                    <div class="bg-pink-50/40 p-1 flex items-center justify-center text-[11px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">기타<br>전달사항</div>
+                <div class="grid grid-cols-[120px_1fr] group/row hover:bg-gray-50/30 transition-colors">
+                    <div class="bg-pink-50/40 p-1 flex items-center justify-center text-[16px] font-bold text-gray-800 text-center border-r border-gray-300 break-keep">기타<br>전달사항</div>
                     <div class="p-0.5 min-h-[60px] relative group/cell flex flex-col" ondragover="window.handleDragOver(event)" ondragleave="window.handleDragLeave(event)" ondrop="window.handleDrop(event, 6, 5)"><button onclick="window.openAddModal(6, 5)" class="add-btn absolute top-0.5 right-1 text-gray-400 hover:text-teal-600 hover:bg-teal-50 px-1.5 py-0.5 rounded opacity-0 focus:opacity-100 group-hover/cell:opacity-100 transition-opacity print:hidden flex items-center gap-1 text-[10px] font-medium z-10" title="일정 추가">+</button><div id="list-etc" class="flex-1 flex flex-col gap-0.5 pr-12"></div></div>
                 </div>
             </div>
@@ -256,9 +256,12 @@
             <p class="text-[11px] text-gray-400 mb-2 ml-6">예: *홍길동(oo연수/14:30/아산교육지원청)</p>
             
             <textarea id="modal-input" class="w-full h-24 p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none resize-none mb-4 text-base" placeholder="내용을 입력하세요..." onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); window.saveModalPlan(); }"></textarea>
-            <div class="flex justify-end gap-2">
-                <button onclick="window.closeAddModal()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium text-xs">취소</button>
-                <button id="modal-save-btn" onclick="window.saveModalPlan()" class="px-4 py-1.5 bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition-colors font-semibold shadow-sm text-xs">저장</button>
+            <div class="flex justify-between w-full items-center">
+                <button id="modal-delete-btn" onclick="window.deletePlanFromModal()" class="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium text-xs hidden">삭제</button>
+                <div class="flex justify-end gap-2 ml-auto">
+                    <button onclick="window.closeAddModal()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium text-xs">취소</button>
+                    <button id="modal-save-btn" onclick="window.saveModalPlan()" class="px-4 py-1.5 bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition-colors font-semibold shadow-sm text-xs">저장</button>
+                </div>
             </div>
         </div>
     </div>
@@ -331,12 +334,27 @@
             return null;
         }
 
-        const mockStorage = {
-            [getWeekId(getMonday(new Date()))]: [
+        const LOCAL_STORAGE_KEY_PREFIX = 'songgok_planner_';
+
+        const localStore = {
+            get: function(weekId) {
+                const data = localStorage.getItem(LOCAL_STORAGE_KEY_PREFIX + weekId);
+                return data ? JSON.parse(data) : [];
+            },
+            set: function(weekId, plans) {
+                localStorage.setItem(LOCAL_STORAGE_KEY_PREFIX + weekId, JSON.stringify(plans));
+            }
+        };
+
+        // 브라우저 로컬 저장소를 활용하여 깃허브 등 환경에서도 데이터 유지
+        const initialWeekId = getWeekId(getMonday(new Date()));
+        if (!localStorage.getItem(LOCAL_STORAGE_KEY_PREFIX + initialWeekId) && !localStorage.getItem('initialized_sample')) {
+            localStore.set(initialWeekId, [
                 { id: '1', dayIndex: 0, categoryIndex: 0, content: '*학교장(아산1지구 교장단 협의회, 오후, 산동초)', createdAt: new Date().toISOString() },
                 { id: '2', dayIndex: 1, categoryIndex: 1, content: '*학교업무최적화 비대면연수(14:40, 마주온)', createdAt: new Date().toISOString() }
-            ]
-        };
+            ]);
+            localStorage.setItem('initialized_sample', 'true');
+        }
 
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -540,7 +558,7 @@
             const weekId = getWeekId(currentWeekMonday);
             
             if (isMock) {
-                mockStorage[weekId] = [...currentPlans];
+                localStore.set(weekId, currentPlans);
                 renderPlans();
                 showToast("일정이 이동되었습니다.");
                 return;
@@ -571,7 +589,7 @@
             if(document.getElementById('list-etc')) document.getElementById('list-etc').innerHTML = '<div class="text-gray-400 text-xs p-1">로딩 중...</div>';
 
             if (isMock) {
-                currentPlans = mockStorage[getWeekId(mondayDate)] || [];
+                currentPlans = localStore.get(getWeekId(mondayDate));
                 setTimeout(renderPlans, 100);
                 return;
             }
@@ -599,7 +617,7 @@
             const newPlans = currentPlans.filter(p => p.id !== planId);
             
             if (isMock) {
-                mockStorage[weekId] = newPlans;
+                localStore.set(weekId, newPlans);
                 currentPlans = newPlans;
                 renderPlans();
                 showToast("일정이 삭제되었습니다.");
@@ -628,6 +646,8 @@
             modalCategory = catIndex;
             modalDay = dayIndex;
             
+            document.getElementById('modal-delete-btn').classList.add('hidden');
+            
             document.getElementById('modal-title').innerHTML = `
                 <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 일정 추가
@@ -649,6 +669,8 @@
 
         window.openEditModal = function(plan) {
             editingPlanId = plan.id;
+            
+            document.getElementById('modal-delete-btn').classList.remove('hidden');
             
             document.getElementById('modal-title').innerHTML = `
                 <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -680,6 +702,15 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 200);
+        };
+
+        window.deletePlanFromModal = function() {
+            if (editingPlanId) {
+                if(confirm("이 일정을 정말 삭제하시겠습니까?")) {
+                    window.deletePlan(editingPlanId);
+                    window.closeAddModal();
+                }
+            }
         };
 
         window.saveModalPlan = async function() {
@@ -714,7 +745,7 @@
             }
             
             if (isMock) {
-                mockStorage[weekId] = newPlans;
+                localStore.set(weekId, newPlans);
                 currentPlans = newPlans;
                 renderPlans();
                 window.closeAddModal();
