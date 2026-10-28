@@ -49,13 +49,14 @@
         @media print {
             @page {
                 size: A4 landscape;
-                margin: 3mm;
+                margin: 5mm;
             }
-            body { 
+            html, body { 
+                height: 100vh !important;
                 background: white !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
-                font-size: 9px !important;
+                overflow: hidden !important; /* 페이지 넘어감 방지 */
             }
             #header-bg { 
                 background: none !important; 
@@ -65,12 +66,11 @@
                 border-radius: 0; 
                 padding: 0.15rem 0; 
                 margin-bottom: 0.15rem; 
+                flex-shrink: 0 !important;
             }
             #header-bg svg, #header-controls, #toast-container { display: none !important; }
             .print-text-black { color: black !important; }
-            .delete-btn { display: none !important; }
-            .drag-handle { display: none !important; }
-            .add-btn { display: none !important; }
+            .delete-btn, .drag-handle, .add-btn { display: none !important; }
             .max-w-full { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
             
             .border-gray-300 { border-color: #666 !important; }
@@ -79,15 +79,39 @@
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
             }
-            .overflow-x-auto { overflow: visible !important; }
-            .min-w-[1000px] { min-width: 100% !important; }
             
             .print-scale-container {
-                font-size: 9px !important;
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
                 line-height: 1.15 !important;
             }
-            .min-h-[75px] {
-                min-height: 65px !important;
+            
+            /* 스크롤 없애고 남은 공간 꽉 채우기 */
+            .overflow-x-auto { 
+                overflow: hidden !important; 
+                flex-grow: 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            
+            /* 표 전체 영역 */
+            .min-w-\[950px\], .min-w-\[1000px\] { 
+                min-width: 100% !important; 
+                flex-grow: 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            
+            /* 각 행들이 남은 높이를 유연하게 나눠 가지도록 설정 */
+            .group\/row {
+                flex-grow: 1 !important;
+                flex-basis: 0 !important;
+            }
+            
+            /* 최소 높이를 강제로 해제하여 한 페이지 안에 무조건 압축되도록 */
+            .min-h-\[75px\], .min-h-\[60px\], .min-h-\[110px\], .min-h-\[80px\] {
+                min-height: 0 !important;
             }
         }
     </style>
@@ -98,39 +122,39 @@
     <div class="max-w-full mx-auto px-1 py-1 sm:px-2 flex flex-col gap-1 w-full print-scale-container">
         
         <!-- 헤더 영역 -->
-        <header id="header-bg" class="bg-gradient-to-r from-teal-600 to-green-700 text-white rounded-lg shadow-sm px-3 py-1.5 sm:px-4 flex flex-col sm:flex-row justify-between items-center gap-1.5">
+        <header id="header-bg" class="bg-gradient-to-r from-teal-600 to-green-700 text-white rounded-lg shadow-sm px-3 py-2 sm:px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
             <div class="flex items-center gap-2">
-                <div class="bg-white/20 p-1 rounded-md backdrop-blur-sm shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="bg-white/20 p-1.5 rounded-md backdrop-blur-sm shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xs sm:text-sm font-bold tracking-tight print-text-black">송곡초등학교</h1>
-                    <div class="flex flex-col mt-0">
-                        <p class="text-green-100 text-[10px] font-medium print-text-black">교직원 주간 교육계획 (일정 드래그 이동, 더블클릭 수정)</p>
+                    <h1 class="text-[17px] sm:text-[19px] font-bold tracking-tight print-text-black">송곡초등학교</h1>
+                    <div class="flex flex-col mt-0.5">
+                        <p class="text-green-100 text-[15px] font-medium print-text-black">교직원 주간 교육계획 (일정 드래그 이동, 더블클릭 수정)</p>
                     </div>
                 </div>
             </div>
             
             <!-- 주차 이동 컨트롤 및 공유 버튼 -->
             <div id="header-controls" class="flex flex-wrap items-center justify-end gap-1">
-                <div class="flex items-center bg-black/15 backdrop-blur-sm rounded-md p-0.5 shadow-inner shrink-0">
+                <div class="flex items-center bg-black/15 backdrop-blur-sm rounded-md p-1 shadow-inner shrink-0">
                     <button id="btn-prev" class="p-1 hover:bg-white/20 rounded transition-colors text-white" title="이전 주">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <div id="week-range" class="px-2 font-semibold text-[11px] min-w-[145px] text-center tracking-tight whitespace-nowrap">
+                    <div id="week-range" class="px-2 font-semibold text-[16px] min-w-[210px] text-center tracking-tight whitespace-nowrap">
                         로딩 중...
                     </div>
                     <button id="btn-next" class="p-1 hover:bg-white/20 rounded transition-colors text-white" title="다음 주">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                     </button>
-                    <div class="w-px h-3 bg-white/30 mx-1"></div>
-                    <button id="btn-today" class="ml-0.5 text-[10px] font-medium bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded transition-colors text-white shadow-sm whitespace-nowrap">
+                    <div class="w-px h-5 bg-white/30 mx-1.5"></div>
+                    <button id="btn-today" class="ml-0.5 text-[15px] font-medium bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded transition-colors text-white shadow-sm whitespace-nowrap">
                         오늘
                     </button>
-                    <button id="btn-print" type="button" class="ml-1 text-[10px] font-medium bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded transition-colors text-white shadow-sm flex items-center gap-1 whitespace-nowrap cursor-pointer" title="주간 계획 인쇄">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <button id="btn-print" type="button" class="ml-1 text-[15px] font-medium bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded transition-colors text-white shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="주간 계획 인쇄">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                         인쇄
                     </button>
                 </div>
@@ -231,7 +255,7 @@
             <!-- 요청하신 예시 문구 -->
             <p class="text-[11px] text-gray-400 mb-2 ml-6">예: *홍길동(oo연수/14:30/아산교육지원청)</p>
             
-            <textarea id="modal-input" class="w-full h-24 p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none resize-none mb-4 text-xs" placeholder="내용을 입력하세요..." onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); window.saveModalPlan(); }"></textarea>
+            <textarea id="modal-input" class="w-full h-24 p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none resize-none mb-4 text-base" placeholder="내용을 입력하세요..." onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); window.saveModalPlan(); }"></textarea>
             <div class="flex justify-end gap-2">
                 <button onclick="window.closeAddModal()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium text-xs">취소</button>
                 <button id="modal-save-btn" onclick="window.saveModalPlan()" class="px-4 py-1.5 bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition-colors font-semibold shadow-sm text-xs">저장</button>
@@ -454,7 +478,7 @@
                 if (!container) return;
                 
                 const el = document.createElement('div');
-                el.className = 'group/item relative p-1 bg-white/95 hover:bg-teal-50/90 border border-gray-200 rounded shadow-sm transition-all cursor-grab active:cursor-grabbing text-[11px] mb-0.5';
+                el.className = 'group/item relative p-1 bg-white/95 hover:bg-teal-50/90 border border-gray-200 rounded shadow-sm transition-all cursor-grab active:cursor-grabbing text-[15px] mb-0.5';
                 el.draggable = true;
                 el.id = `plan-${plan.id}`;
                 
